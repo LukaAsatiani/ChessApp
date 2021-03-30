@@ -20,7 +20,6 @@ const store = new Vuex.Store({
     START_SESSION: async ({dispatch}) => {
       const res = await gql.query(`query { getUser  { ok user { id username email createdAt updatedAt } message}}`)
       
-      console.log('Start_Session', res)
       if( res.ok ){
         dispatch('user/SET_PROFILE', res.user)
       }

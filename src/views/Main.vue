@@ -87,9 +87,6 @@ export default {
     back () {
       this.chat_window = false
     },
-  },
-  mounted(){
-    console.log(this.getProfile)
   }
 }
 </script>

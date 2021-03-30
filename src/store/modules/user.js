@@ -29,8 +29,6 @@ export default {
           image
         }
       )
-
-      console.log(res)
     }
   }
 }

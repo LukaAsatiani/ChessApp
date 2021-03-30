@@ -92,9 +92,6 @@ export default {
     ...mapActions('auth', {
       logout: 'AUTH_LOGOUT'
     })
-  },
-  mounted(){
-    console.log(this.getProfile)
   }
 }
 </script>
