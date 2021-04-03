@@ -7859,11 +7859,6 @@
   "resolved" "https://registry.npm.taobao.org/vm-browserify/download/vm-browserify-1.1.2.tgz"
   "version" "1.1.2"
 
-"vue-avatar-cropper@^1.0.9":
-  "integrity" "sha512-qTHlx+PLtU/iZc9Pu6muP2hGrBbL0CpaBDGsenRvS7qKDsV/WzWQSM8z8CD5XpBWXm7l2toNAYwkhmWepk0YMg=="
-  "resolved" "https://registry.npmjs.org/vue-avatar-cropper/-/vue-avatar-cropper-1.0.9.tgz"
-  "version" "1.0.9"
-
 "vue-axios@^3.2.4":
   "integrity" "sha512-8Dgws6dwt+1LoKEU4HDzIPfaRgWHl0xLDLW6kxrAk/z3GAJ2thkajcXC4qZgmqj0cZRx/Z/dzooKi5HWtUQwxA=="
   "resolved" "https://registry.npmjs.org/vue-axios/-/vue-axios-3.2.4.tgz"

@@ -9,31 +9,7 @@ const routes = [
   {
     path: '/',
     name: 'main',
-    meta: {
-      needAuth: true,
-      guard: true
-    },
     component: Main
-  },
-  {
-    path: '/login',
-    name: 'login',
-    meta: {
-      needAuth: false,
-      guard: true,
-      layout: 'empty'
-    },
-    component: require('@/views/auth/Login.vue').default
-  },
-  {
-    path: '/signup',
-    name: 'signup',
-    meta: {
-      needAuth: false,
-      guard: true,
-      layout: 'empty'
-    },
-    component: require('@/views/auth/Signup.vue').default
   },
   {
     path: '/404',
@@ -45,7 +21,7 @@ const routes = [
     path: '*',
     beforeEnter(to, from, next) {
       next({name: '404'})
-    }  
+    } 
   }
 ]
 
@@ -56,27 +32,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach( async (to, from, next) => {
-  // store.dispatch('auth/AUTH_LOGIN')
-
-  if (to.matched.some(record => record.meta.guard)) {
-    const check = async () => {
-      if(!localStorage.token)
-        return false
-      
-      return await store.dispatch('START_SESSION')
-    }
-
-    const logged = await check()
-    
-    if (logged && !to.meta.needAuth)
-      next({name: 'main'})
-    
-    if (!logged && to.meta.needAuth)
-      next({name: 'login'})
-    
-    next()
-  }
-    
   next()
 })
 
