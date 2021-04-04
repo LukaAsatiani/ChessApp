@@ -26,7 +26,7 @@
       return {
         size: null,
         current_orientation: 'w',
-        // grabbed: null
+        valid: null
       }
     },
     computed: {
@@ -40,7 +40,11 @@
         return {
           data: {
             size: this.size,
-            current_orientation: this.current_orientation
+            current_orientation: this.current_orientation,
+            validSquares: this.valid
+          },
+          callbacks: {
+            setValid: this.setValid      
           }
         }
       },
@@ -49,6 +53,9 @@
           data: {
             size: this.size / 8,
             current_orientation: this.current_orientation
+          },
+          callbacks: {
+            setValid: this.setValid      
           }
         }
       }
@@ -62,14 +69,14 @@
 
         this.current_orientation = 'w'
       },
-      // setGrabbed (target = null) {
-      //   if(!target){
-      //     this.grabbed = null
-      //     return
-      //   }
+      setValid (squares = null) {
+        if(!squares){
+          this.valid = null
+          return
+        }
           
-      //   this.grabbed = target
-      // }
+        this.valid = squares
+      }
     },
     mounted () {
       this.size = Math.min(this.$refs.container.clientHeight, this.$refs.container.clientWidth)

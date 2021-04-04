@@ -1,6 +1,83 @@
 export default {
   default_fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 
+  movePaterns: {
+    p: {
+      directions: [[1, 0]],
+      take_direction: [[1, 1], [1, -1]],
+      limit: 2
+    },
+    r: {
+      directions: [[1, 0], [0, 1], [-1, 0], [0, -1]],
+      limit: null
+    },
+    b: {
+      directions: [[1, 1], [-1, 1], [1, -1], [-1, -1]],
+      limit: null
+    },
+    k: {
+      directions: [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]],
+      limit: 1
+    },
+    q: {
+      directions: [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]],
+      limit: null
+    },
+    n: {
+      directions: [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, -2], [-1, -2], [1, 2], [-1, 2]],
+      limit: 1
+    }
+  },
+
+  // outlinedMatrix (matrix) {
+  //   let m = [...matrix]
+  //   m = m.map(s => `*${s}*`)
+    
+  //   return ['*'.repeat(8), ...m, '*'.repeat(8)]
+  // },
+
+  validMoves (piece, pos, matrix, orientation, dict = false){
+    const p = this.movePaterns[piece.toLowerCase()]
+    const color = this.color(piece)
+    const c_this = this
+
+    const list = []
+    const t_dict = {}
+
+    p.directions.forEach(check)
+
+    function check(direction){
+      const n = {...pos}
+      const ind = color === orientation ? -1 : 1
+      let counter = 0
+      
+      while(c_this.checkRange(n)){
+        if(counter === p.limit)
+          break
+
+        if(counter > 0){
+          if(matrix[n.y][n.x] !== '#')
+            break
+        }
+        
+        n.y += ind * direction[0]
+        n.x += direction[1]
+
+        if(n, c_this.checkRange({y: 7 - n.y, x: n.x})){
+          list.push(`${8 - n.y}${n.x + 1}`)
+          if(matrix[n.y][n.x] === '#')
+            t_dict[`${n.y + 1}${n.x + 1}`] = true
+        }
+        counter++
+      }
+    }
+    
+    if(dict)
+      return t_dict
+
+    return list
+  },
+
   color: (piece) => {
     let p = piece.split('_')[0]
     
@@ -21,10 +98,6 @@ export default {
     let matrixstr = matrix.join('/')
     matrixstr = matrixstr.replaceAll(/(#+)/ig, (match) => match.length)
     return matrixstr
-  },
-
-  validMove:(pd, fen) => {
-
   },
 
   fen2dict:(fen) => {
@@ -55,10 +128,13 @@ export default {
     return newString;
   },
 
-  updatedMatrix(matrix, piece, pos){
-    let temp = `${matrix[pos.y]}`
+  updatedMatrix(matrix, piece, pos, orientation){
+    const y = orientation === 'w' ? pos.y : 7 - pos.y
+    const x = orientation === 'w' ? pos.x : 7 - pos.x
+
+    let temp = `${matrix[y]}`
     
-    matrix[pos.y] = this.replaceChar(temp, piece, pos.x)
+    matrix[y] = this.replaceChar(temp, piece, x)
     return matrix
   },
 
@@ -69,7 +145,22 @@ export default {
     return 'w'
   },
 
-  move(piece, pos, to, fen){
+  checkRange(pos){
+    return pos.x >= 0 && pos.x <= 7 && pos.y >= 0 && pos.y <= 7
+  },
+
+  showValid(piece, pos, fen, orientation){
+    let matrix = this.fen2matrix(fen)
+    
+    const _pos = {
+      y: 8 - pos.y,
+      x: pos.x - 1
+    }
+
+    return this.validMoves(piece, _pos, matrix, orientation, true)
+  },
+
+  move(piece, pos, to, fen, orientation){
     let matrix = this.fen2matrix(fen)
     
     const _to = {
@@ -82,8 +173,6 @@ export default {
       x: pos.x - 1
     }
 
-    console.log(_pos, _to)
-
     if(!(to.x >= 1 && to.x <= 8 && to.y >= 1 && to.y <= 8)){
       return {
         ok: false,
@@ -92,7 +181,13 @@ export default {
     }
 
     const square = matrix[_to.y][_to.x]
-    console.log(_to.y, _to.x)
+    
+    if(!this.validMoves(piece, _pos, matrix, orientation).includes(`${to.y}${to.x}`))
+      return {
+        ok: false,
+        pos: _pos
+      }
+
     if(square !== '#' && this.color(square) === this.color(piece)){
       return {
         ok: false,
@@ -100,12 +195,13 @@ export default {
       }
     }
 
-    this.updatedMatrix(matrix, '#', _pos)
-    this.updatedMatrix(matrix, piece, _to)
+    this.updatedMatrix(matrix, '#', _pos, orientation)
+    this.updatedMatrix(matrix, piece, _to, orientation)
+
     let fen_parts = fen.split(' ')
     fen_parts[0] = this.matrix2fen(matrix)
     fen_parts[1] = this.swithTurn(fen_parts[1])
-    console.log(matrix)
+    
     return {
       ok: true,
       pos: _to,

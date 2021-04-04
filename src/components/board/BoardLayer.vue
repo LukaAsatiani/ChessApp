@@ -13,7 +13,12 @@
         :key="j"
         :style="squareStyle"
       >
-        <span 
+        <v-sheet
+          v-if="data.validSquares && data.validSquares[`${i}${j}`]"
+          class="valid-square-pointer"
+        >
+        </v-sheet>
+        <span
           v-if="i === 8"
           class="notation-horizontal font-weight-bold caption"
         >
@@ -37,11 +42,15 @@
       data: {
         type: Object,
         default: () => ({})
+      },
+      callbacks: {
+        type: Object,
+        default: () => ({})
       }
     },
     data () {
       return {
-        
+          
       }
     },
     computed: {
@@ -68,7 +77,10 @@
       },
       s_size(){
         return this.size / 8
-      }
+      },
+      validSquares () {
+        return this.data.validSquares
+      },
     }
   }
   
@@ -86,7 +98,17 @@
   }
 
   .square {
-    position: relative
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .valid-square-pointer {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color:rgba(20,85,30,0.5)
   }
 
   .notation-horizontal {
