@@ -2,33 +2,28 @@
   <div>
     <v-row
       class="pa-0 ma-0"
-      v-for="i in 8"
+      v-for="(n, i) in game.notation.v"
       :key="i"
       :style="rowStyle"
     >
       <v-sheet
         class="pa-0 ma-0 square"
-        v-for="j in 8"
+        v-for="(c, j) in game.notation.h"
         :class="j % 2 === i % 2 ? 'c-white' : 'c-black'"
         :key="j"
         :style="squareStyle"
       >
-        <v-sheet
-          v-if="data.validSquares && data.validSquares[`${i}${j}`]"
-          class="valid-square-pointer"
-        >
-        </v-sheet>
         <span
-          v-if="i === 8"
+          v-if="i === 7"
           class="notation-horizontal font-weight-bold caption"
         >
-          {{current_orientation === 'b' ? String.fromCharCode(96 + (9 - j)) : String.fromCharCode(96 + j)}}
+          {{c}}
         </span>
         <span 
-          v-if="j === 8"
+          v-if="j === 7"
           class="notation-vertical font-weight-bold caption"
         >
-          {{current_orientation === 'b' ? i : 9 - i}}
+          {{9 - n}}
         </span>
       </v-sheet>
     </v-row>  
@@ -38,25 +33,13 @@
 <script>
 
   export default {
-    props: {
-      data: {
-        type: Object,
-        default: () => ({})
-      },
-      callbacks: {
-        type: Object,
-        default: () => ({})
-      }
-    },
+    props: ['size', 'game'],
     data () {
       return {
           
       }
     },
     computed: {
-      notation(){
-        return this.orientation[this.current_orientation].notation
-      },
       squareStyle(){
         return {
           height: `${this.s_size}px`,
@@ -69,18 +52,9 @@
           width: `${this.size}px`
         };
       },
-      size () {
-        return this.data.size
-      },
-      current_orientation () {
-        return this.data.current_orientation
-      },
       s_size(){
         return this.size / 8
-      },
-      validSquares () {
-        return this.data.validSquares
-      },
+      }
     }
   }
   

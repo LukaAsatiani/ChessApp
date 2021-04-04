@@ -7,8 +7,8 @@
       class="mx-auto my-auto primary relative"
       :style="boardStyle"
     >
-      <BoardLayer :data="boardLProps.data" :callbacks="boardLProps.callbacks"/>
-      <PieceLayer :data="pieceLProps.data" :callbacks="pieceLProps.callbacks" class="absolute" />
+      <BoardLayer :size="size" :game="game" :key="`b${orient}`"/>
+      <PieceLayer :size="size / 8" class="absolute" :game="game" :key="`p${orient}`"/>
     </v-sheet>
   </v-row>
 </template>
@@ -16,6 +16,7 @@
 <script>
   import BoardLayer from './BoardLayer.vue'
   import PieceLayer from './PieceLayer.vue'
+  import { Game, Piece } from '@/helpers/modules/chess' 
 
   export default {
     components: {
@@ -25,8 +26,7 @@
     data () {
       return {
         size: null,
-        current_orientation: 'w',
-        valid: null
+        orient: null
       }
     },
     computed: {
@@ -36,54 +36,18 @@
           width: `${this.size}px`
         }
       },
-      boardLProps() {
-        return {
-          data: {
-            size: this.size,
-            current_orientation: this.current_orientation,
-            validSquares: this.valid
-          },
-          callbacks: {
-            setValid: this.setValid      
-          }
-        }
-      },
-      pieceLProps() {
-        return {
-          data: {
-            size: this.size / 8,
-            current_orientation: this.current_orientation
-          },
-          callbacks: {
-            setValid: this.setValid      
-          }
-        }
-      }
-    },
-    methods: {
-      switchOrientation(){
-        if(this.current_orientation === 'w'){
-          this.current_orientation = 'b'
-          return
-        }
-
-        this.current_orientation = 'w'
-      },
-      setValid (squares = null) {
-        if(!squares){
-          this.valid = null
-          return
-        }
-          
-        this.valid = squares
+      game(){
+        return new Game()
       }
     },
     mounted () {
       this.size = Math.min(this.$refs.container.clientHeight, this.$refs.container.clientWidth)
-
-      window.addEventListener("keypress", function(e) {
-        if(String.fromCharCode(e.keyCode) === 'x')
-          this.switchOrientation()
+      
+      window.addEventListener("keyup", function(e) {
+        if(String.fromCharCode(e.keyCode).toLowerCase() === 'x'){
+          this.game.switchOrient()
+          this.orient = this.game.orient
+        }
       }.bind(this));
     }
   }
