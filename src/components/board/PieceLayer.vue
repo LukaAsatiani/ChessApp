@@ -4,15 +4,6 @@
     @mousemove="move($event)"
     :key="cnt"
   >
-    <!-- <v-sheet
-      class="transparent piece-container"
-      v-for="(item, i) in position.pieces"
-      :key="i"
-      :v-if="false"
-      :class="[item, position.turn === color(item) ? 'grabable' : null]"
-      :style="pieceContainerStyle({...pcp(item)})"      
-      @mousedown="grab(item, $event)"
-    ></v-sheet> -->
     <v-sheet
       class="transparent piece-container"
       v-for="(value, name) in game.position.pieces"
@@ -26,6 +17,8 @@
 </template>
 
 <script>
+  import { Piece, King } from '@/helpers/modules/chess'
+
   export default {
     props: ['size', 'game'],
     data () {
@@ -47,11 +40,15 @@
     },
     methods: {
       grab(pd, event){
-        if(pd.color === this.game.position.turn){
+        if(this.game.position.turn === this.game.player && Piece.color(pd.piece) === this.game.player){
+          this.ativateSquare(pd.pos)
+          this.validation(pd.pos)
+
           this.grabbed = {
             target: event.target,
             pd
           }
+
           this.picked = {}
           const x = (event.layerX - this.size / 2) / this.size * 100
           const y = (event.layerY - this.size / 2) / this.size * 100
@@ -60,8 +57,11 @@
         }
       },
       place(event){
+        if(this.game.position.turn !== this.game.player)
+          return
+
         let t = this.grabbed
-        
+
         if(this.picked.target)
           t = this.picked
 
@@ -71,14 +71,16 @@
           let y = Math.floor(event.layerY / this.size) + 1
           
           const to = {
-            y: 9 - y, x
+            y, x
           }
           
           const ps = this.game.parseSquareNotation(to)
+          
           if(!ps.ok || ps.value === pos){
             t.target.style.transform = t.pd.transform
             this.picked = t
             this.grabbed = {}
+            this.update()
             return
           }
 
@@ -87,21 +89,11 @@
           if(!move.ok){
             t.target.style.transform = t.pd.transform
             this.picked = t
+            this.update()
+          } else {
+            this.actionSquares([pos, ps.value])
+            this.cnt++
           }
-
-          console.log(this.game.position)
-          this.cnt++
-          // let n_fen = ch.move(piece, pos, to, this.fen, this.current_orientation)
-          
-          // if(n_fen.ok){
-          //   this.fen = n_fen.value
-          //   t.target.style.zIndex = 1
-          //   this.callbacks.setValid(null)
-          //   this.picked = {}
-          // } else {
-          //   this.picked = t
-          //   event.target.style.transform = `translate(${n_fen.pos.x * 100}%, ${n_fen.pos.y * 100}%)`
-          // }
 
           this.grabbed = {}
         }
@@ -115,6 +107,22 @@
         
           this.grabbed.target.style.transform = `translate(${x}%, ${y}%)`
         }
+      },
+      ativateSquare(pos){
+        this.game.activeSquare = pos
+        this.update()
+      },
+      actionSquares(squares){
+        this.game.actionSquares = squares
+        this.update()
+      },
+      validation(square){
+        const squares = this.game.validation(square)
+        if(squares.length > 0)
+          this.update()
+      },
+      update(){
+        this.$emit('update')
       }
     }
   }
@@ -144,10 +152,6 @@
   }
 
   .grabable:hover {
-    cursor: grab;
-  }
-
-  .grabable:active {
-    cursor: grabbing;
+    cursor: pointer;
   }
 </style>

@@ -7,8 +7,18 @@
       class="mx-auto my-auto primary relative"
       :style="boardStyle"
     >
-      <BoardLayer :size="size" :game="game" :key="`b${orient}`"/>
-      <PieceLayer :size="size / 8" class="absolute" :game="game" :key="`p${orient}`"/>
+      <BoardLayer 
+        :size="size" 
+        :game="game" 
+        :key="`b${orient}${cnt}`"
+      />
+      <PieceLayer 
+        class="absolute"
+        :size="size / 8" 
+        :game="game" 
+        :key="`p${orient}`"
+        v-on:update="update"
+      />
     </v-sheet>
   </v-row>
 </template>
@@ -26,7 +36,8 @@
     data () {
       return {
         size: null,
-        orient: null
+        orient: null,
+        cnt: 0
       }
     },
     computed: {
@@ -38,6 +49,11 @@
       },
       game(){
         return new Game()
+      }
+    },
+    methods: {
+      update(){
+        this.cnt++
       }
     },
     mounted () {

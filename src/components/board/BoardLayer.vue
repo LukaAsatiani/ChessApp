@@ -13,6 +13,26 @@
         :key="j"
         :style="squareStyle"
       >
+        <v-sheet 
+          v-if="game.actionSquares && game.actionSquares.includes(`${c}${9 - n}`)"
+          class="action-square"
+        >
+        </v-sheet>
+        <v-sheet
+          v-else-if="game.activeSquare === `${c}${9 - n}`"
+          class="active-square"
+        >
+        </v-sheet>
+        <v-sheet
+          v-else-if="game.validSquares && game.validSquares.includes(`${c}${9 - n}`)"
+          class="valid-square"
+        >
+        </v-sheet>
+        <v-sheet
+          v-else-if="game.validSquares && game.validSquares.includes(`x${c}${9 - n}`)"
+          class="killing-square"
+        >
+        </v-sheet>
         <span
           v-if="i === 7"
           class="notation-horizontal font-weight-bold caption"
@@ -27,7 +47,7 @@
         </span>
       </v-sheet>
     </v-row>  
-  </div>  
+  </div>
 </template>
 
 <script>
@@ -78,11 +98,29 @@
     justify-content: center;
   }
 
-  .valid-square-pointer {
+  .valid-square {
     width: 20px;
     height: 20px;
     border-radius: 50%;
     background-color:rgba(20,85,30,0.5)
+  }
+
+  .active-square {
+    width: 100%;
+    height: 100%;
+    background-color:rgba(20,85,30,0.5)
+  }
+
+  .action-square {
+    width: 100%;
+    height: 100%;
+    background-color:rgba(0,155,199,0.41)
+  }
+
+  .killing-square {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(transparent 0%, transparent 79%, rgba(20,85,0,0.3) 80%)
   }
 
   .notation-horizontal {
