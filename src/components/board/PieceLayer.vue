@@ -11,13 +11,13 @@
       :v-if="false"
       :style="pieceContainerStyle(value)"
       :class="[name, value.color === game.position.turn && game.position.turn === game.player ? 'grabable' : null]"
-      @mousedown="grab(value, $event)"
+      @mousedown="grab({...value, name}, $event)"
     ></v-sheet>
   </div>
 </template>
 
 <script>
-  import { Piece, King } from '@/helpers/modules/chess'
+  import { Piece } from '@/helpers/modules/chess'
 
   export default {
     props: ['size', 'game'],
@@ -33,7 +33,7 @@
         return (v) => ({
           height: `${this.size}px`,
           width: `${this.size}px`,
-          transform: v.transform,
+          transform: v.transform[this.game.orient],
           "background-image": `url(./pieces/${v.color}/${v.piece}.svg)`
         });
       }
@@ -42,7 +42,7 @@
       grab(pd, event){
         if(this.game.position.turn === this.game.player && Piece.color(pd.piece) === this.game.player){
           this.ativateSquare(pd.pos)
-          this.validation(pd.pos)
+          this.validation(pd.name)
 
           this.grabbed = {
             target: event.target,
@@ -77,7 +77,7 @@
           const ps = this.game.parseSquareNotation(to)
           
           if(!ps.ok || ps.value === pos){
-            t.target.style.transform = t.pd.transform
+            t.target.style.transform = t.pd.transform[this.game.orient]
             this.picked = t
             this.grabbed = {}
             this.update()
@@ -87,7 +87,7 @@
           const move = this.game.move(pos, ps.value)
 
           if(!move.ok){
-            t.target.style.transform = t.pd.transform
+            t.target.style.transform = t.pd.transform[this.game.orient]
             this.picked = t
             this.update()
           } else {
